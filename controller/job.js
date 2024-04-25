@@ -91,16 +91,24 @@ const getAllJobs = async(req , res , next) =>{
     try {
         const searchQuery = req.query.searchQuery || "";   //This is called QUERY PARAMETER where you can filter which data have to show when a user search about Job....
         
-        const skills = req.query.skills || "";
+        const skills = req.query.skills;
         let filteredSkills;
         let filter = {} ;
+        if(skills && skills.length > 0){
+            filteredSkills = skills.split(",");
+
+            const caseInsensitiveSkills = filteredSkills.map(
+                (skill) => new RegExp(skill , "i"));
+            filteredSkills = caseInsensitiveSkills ;    
+            filter = {skills : {$in : filteredSkills}}   //$IN  is search for each of the skills which is given by the user
+        }
         
        
        
         const jobList = await job.find(
            // {title : searchQuery} ,  // Whole title have to search here otherwise it will through an error
           
-           {title : {$regex: searchQuery , $options : "i"} } ,  // This is called REGEX where you can search any part of the title...
+           {title : {$regex: searchQuery , $options : "i"} , ...filter } ,  // This is called REGEX where you can search any part of the title...
             
            {title : 1 , companyName : 1 , location : 1 , jobType : 1 , skills : 1 });  //This is called PROJECTION where you can filter which data have to show when a user search about Job....
         res.json({ data : jobList }); 
