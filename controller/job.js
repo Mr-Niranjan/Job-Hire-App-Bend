@@ -94,9 +94,16 @@ const getAllJobs = async(req , res , next) =>{
         const skills = req.query.skills || "";
         let filteredSkills;
         let filter = {} ;
+        if(skills && skills.length > 0){
+            filteredSkills = skills.split(",");
+
+            const caseInsensitiveSkills = filteredSkills.map(
+                (skill) => new RegExp(skill , "i"));
+            filteredSkills = caseInsensitiveSkills ;    
+            filter = {skills : {$in : filteredSkills}}   //$IN  is search for each of the skills which is given by the user
+        }
         
-       
-       
+             
         const jobList = await job.find(
            // {title : searchQuery} ,  // Whole title have to search here otherwise it will through an error
           
