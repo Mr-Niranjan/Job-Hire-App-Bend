@@ -30,10 +30,10 @@ const jobSchema = new mongoose.Schema(
         type : String,
         required : true
     },
-    locationType : {
-        type : String,
-        required : true
-    },
+    // locationType : {
+    //     type : String,
+    //     required : true
+    // },
     information : {
         type : String,
         required : true

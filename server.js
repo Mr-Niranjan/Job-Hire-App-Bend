@@ -3,11 +3,15 @@ const express = require("express");
 const mongoose = require("mongoose");
 const authRoute = require("./routes/auth");
 const jobRoute = require("./routes/job")
+const cors = require("cors");
 
 
 const app = express();
 
 app.use(express.json());
+app.use(cors());
+
+
 app.get("/health", (req, res) => {
   res.json({
     status: "active",
