@@ -3,7 +3,7 @@ const Job = require("../models/job");
 
 const createJobPost = async (req, res, next) => {
   try {
-    const currentUserId = req.currentUserId;
+    const currentUserId = req.currentUserId; //UserId will be generate here
     const {
       companyName,
       logoUrl,
@@ -46,7 +46,7 @@ const createJobPost = async (req, res, next) => {
       skills,
       jobType,
       information,
-      refUserId: currentUserId,
+      refUserId: currentUserId, //UserId will be generate here
     });
 
     await jobDetails.save();
@@ -61,21 +61,25 @@ const createJobPost = async (req, res, next) => {
 const getJobDetailsById = async (req, res, next) => {
   try {
     const { jobId } = req.params; // To Copy the Input as Id which is searched by the user.....
-
+    const { userId } = req.params;
+    console.log(userId);
     if (!jobId) {
       //then find Id is available or not
       return res.status(400).json({ errorMessage: "Please Enter Valid Id" });
     }
 
-    const jobDetails = await Job.findById(jobId);
+    const jobDetails = await Job.findById(jobId); //By this it will check whether data is present in the particular id .
 
     if (!jobDetails) {
       // then find corresponding job according to the given ID  (if not)
       return res.status(404).json({ errorMessage: "Job Not Found" });
     }
-<<<<<<< HEAD
 
-    res.json({ jobDetails });
+    if (jobDetails.refUserId.toString() === userId) {
+      isEditable = true;
+    }
+
+    res.json({ jobDetails, isEditable: isEditable });
   } catch (error) {
     // res.status(500).json({errorMessage : "Something Error Occurred"})
     next(error); // ( Global Error Handler Middleware Function ) Take from the Function which is created in the Server.js
@@ -143,6 +147,7 @@ const updateJobDetailsById = async (req, res, next) => {
     next(error);
   }
 };
+
 const getAllJobs = async (req, res, next) => {
   try {
     const searchQuery = req.query.searchQuery || ""; //This is called QUERY PARAMETER where you can filter which data have to show when a user search about Job....
@@ -165,7 +170,14 @@ const getAllJobs = async (req, res, next) => {
 
       { title: { $regex: searchQuery, $options: "i" }, ...filter }, // This is called REGEX where you can search any part of the title...
 
-      { title: 1, companyName: 1, location: 1, jobType: 1, skills: 1 }
+      {
+        title: 1,
+        companyName: 1,
+        location: 1,
+        jobType: 1,
+        skills: 1,
+        salary: 1,
+      }
     ); //This is called PROJECTION where you can filter which data have to show when a user search about Job....
     res.json({ data: jobList });
   } catch (error) {
@@ -179,36 +191,3 @@ module.exports = {
   updateJobDetailsById,
   getAllJobs,
 };
-=======
-}
-const getAllJobs = async(req , res , next) =>{
-    try {
-        const searchQuery = req.query.searchQuery || "";   //This is called QUERY PARAMETER where you can filter which data have to show when a user search about Job....
-        
-        const skills = req.query.skills || "";
-        let filteredSkills;
-        let filter = {} ;
-        if(skills && skills.length > 0){
-            filteredSkills = skills.split(",");
-
-            const caseInsensitiveSkills = filteredSkills.map(
-                (skill) => new RegExp(skill , "i"));
-            filteredSkills = caseInsensitiveSkills ;    
-            filter = {skills : {$in : filteredSkills}}   //$IN  is search for each of the skills which is given by the user
-        }
-        
-             
-        const jobList = await job.find(
-           // {title : searchQuery} ,  // Whole title have to search here otherwise it will through an error
-          
-           {title : {$regex: searchQuery , $options : "i"} } ,  // This is called REGEX where you can search any part of the title...
-            
-           {title : 1 , companyName : 1 , location : 1 , jobType : 1 , skills : 1 });  //This is called PROJECTION where you can filter which data have to show when a user search about Job....
-        res.json({ data : jobList }); 
-    } catch (error) {
-        next(error)
-    }
-}
-
-module.exports = {createJobPost , getJobDetailsById , updateJobDetailsById , getAllJobs}
->>>>>>> e352b419446b27107979aa08ea7187b9d8e9e015

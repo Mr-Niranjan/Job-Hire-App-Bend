@@ -23,7 +23,7 @@ app.get("/health", (req, res) => {
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/jobs", jobRoute);
 
-app.use((error , req , res , next) => {               // Function to Show 'error' with less code... 
+app.use((error , req , res , next) => {  // Function to Show 'error' with less code... 
   console.log(error)
   res.status(500).json({errorMessage : "Something Went Wrong"})
 })

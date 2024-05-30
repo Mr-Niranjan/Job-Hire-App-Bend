@@ -23,12 +23,12 @@ const registerUser = async (req, res, next) => {
 
     const userData = new User({
       name,
-      email ,
+      email,
       password: hashedPassword,
       mobile,
     });
 
-    await userData.save();
+    await userData.save(); // This have to mention because by which the new data will be store in the database.
 
     res.json({ message: "User Registered Successfully" });
   } catch (error) {
@@ -61,7 +61,7 @@ const loginUser = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { userId: userDetails._id },
+      { userId: userDetails._id }, // userId : random token id
       process.env.SECRET_KEY,
       { expiresIn: "60h" }
     );
@@ -69,8 +69,10 @@ const loginUser = async (req, res) => {
     res.json({
       message: "User Login Successfully", //If Email and Password Matched......
       token: token,
+      userId: userDetails._id,
       name: userDetails.name,
     });
+    console.log(userDetails);
   } catch (error) {
     // res.json({ message: "Something Error Occurred" });   // if Not
     next(error); // ( Global Error Handler Middleware Function ) Take from the Function which is created in the Server.js
